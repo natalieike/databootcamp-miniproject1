@@ -1,15 +1,16 @@
 '''Module for bank employee operations'''
 
-from bank_schema import Employee
 from sqlalchemy import select
-from db import get_db
-from errors import log_error
+from bank.bank_schema import Employee
+from utils.db import get_db
+from utils.errors import log_error
 
 
 class BankEmployee:
     '''Class for bank employee operations'''
 
-    def __init__(self, first_name, last_name, email, is_manager, department):
+    def __init__(self, employee_id, first_name, last_name, email, is_manager, department):
+        self.id = employee_id
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
@@ -26,6 +27,7 @@ class BankEmployee:
                 db.rollback()
             else:
                 db.commit()
+                db.refresh(self)
 
     @staticmethod
     def get_all():

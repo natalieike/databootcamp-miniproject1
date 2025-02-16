@@ -5,7 +5,7 @@ import contextlib
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from bank_schema import ModelBase
+from bank.bank_schema import ModelBase
 
 load_dotenv()
 

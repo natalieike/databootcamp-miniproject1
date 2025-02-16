@@ -1,16 +1,16 @@
 '''Module for bank product operations'''
 
-from bank_schema import Product
 from sqlalchemy import select
-from db import get_db
-from errors import log_error
+from bank.bank_schema import Product
+from utils.db import get_db
+from utils.errors import log_error
 
 
 class BankProduct:
     '''Class for bank account operations'''
 
-    def __init__(self, id, customer_id, product_type, balance, min_payment):
-        self.id = id
+    def __init__(self, product_id, customer_id, product_type, balance, min_payment):
+        self.id = product_id
         self.customer_id = customer_id
         self.type = product_type
         self.balance = balance
@@ -26,6 +26,7 @@ class BankProduct:
                 db.rollback()
             else:
                 db.commit()
+                db.refresh(self)
 
     @staticmethod
     def get_all():

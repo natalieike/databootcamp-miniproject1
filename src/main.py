@@ -1,10 +1,10 @@
 '''Main script to run app'''
 
-from bank_account import BankAccount
-from bank_product import BankProduct
-from bank_customer import BankCustomer
-from bank_employee import BankEmployee
-from errors import log_error
+from bank.bank_account import BankAccount
+from bank.bank_product import BankProduct
+from bank.bank_customer import BankCustomer
+from bank.bank_employee import BankEmployee
+from utils.errors import log_error
 
 
 def main_menu():
@@ -70,19 +70,19 @@ def employee_menu():
     print('4. Products')
     print('5. Exit')
     choice = input('Enter a choice: ')
-    if choice == '1':
-        create_customer()
-    elif choice == '2':
-        create_employee()
-    elif choice == '3':
-        employee_accounts()
-    elif choice == '4':
-        employee_products()
-    elif choice == '5':
-        main_menu()
-    else:
-        print('Invalid choice')
-        employee_menu()
+    # if choice == '1':
+    #     create_customer()
+    # elif choice == '2':
+    #     create_employee()
+    # elif choice == '3':
+    #     employee_accounts()
+    # elif choice == '4':
+    #     employee_products()
+    # elif choice == '5':
+    #     main_menu()
+    # else:
+    #     print('Invalid choice')
+    #     employee_menu()
 
 
 def customer_accounts(customer_id):
@@ -102,7 +102,7 @@ def customer_accounts(customer_id):
     elif choice == '4':
         withdraw(customer_id)
     elif choice == '5':
-        customer_menu()
+        main_menu()
     else:
         print('Invalid choice')
         customer_accounts(customer_id)
@@ -119,19 +119,21 @@ def customer_products(customer_id):
     choice = input('Enter a choice: ')
     if choice == '1':
         view_products(customer_id)
-    elif choice == '2':
-        create_product(customer_id)
-    elif choice == '3':
-        debit(customer_id)
-    elif choice == '4':
-        credit(customer_id)
-    elif choice == '5':
-        make_payment(customer_id)
-    elif choice == '6':
-        customer_menu()
+    # elif choice == '2':
+    #     create_product(customer_id)
+    # elif choice == '3':
+    #     debit(customer_id)
+    # elif choice == '4':
+    #     credit(customer_id)
+    # elif choice == '5':
+    #     make_payment(customer_id)
+    # elif choice == '6':
+    #     customer_menu()
     else:
         print('Invalid choice')
         customer_products(customer_id)
+
+# Customer Accounts
 
 
 def view_accounts(customer_id):
@@ -139,9 +141,11 @@ def view_accounts(customer_id):
     accounts = BankAccount.get_all_by_customer_id(customer_id)
     if not accounts:
         print('No accounts found')
+        log_error(f'No accounts found for customer ID {customer_id}')
     else:
         for account in accounts:
-            print(account)
+            print(
+                f'Account ID: {account.id} - Type: {account.type} - Balance: {account.balance} - Can Overdraft: {account.can_overdraft}')
     customer_accounts(customer_id)
 
 
@@ -159,6 +163,70 @@ def create_account(customer_id):
 
     account = BankAccount(None, customer_id, normalized_account_type,
                           balance, can_overdraft)
-    account.save()
-    print(f'Account {account.id} created with a balance of {account.balance}')
+    new_account = account.add_new()
+    print(
+        f'Account {new_account.id} created with a balance of {new_account.balance}')
     customer_accounts(customer_id)
+
+
+def deposit(customer_id):
+    '''Deposit money into an account'''
+    account_id = input('Enter the account ID: ')
+    amount = float(input('Enter the amount to deposit: '))
+
+    account_details = BankAccount.get_by_id(account_id)
+    account = BankAccount(account_details.id, account_details.customer_id, account_details.type,
+                          account_details.balance, account_details.can_overdraft)
+
+    if not account:
+        print('Account not found')
+        log_error(
+            f'Account not found: {account_id} for customer ID {customer_id}')
+        return customer_accounts(customer_id)
+
+    account.make_deposit(amount)
+    print(f'New balance: {account.balance}')
+    customer_accounts(customer_id)
+
+
+def withdraw(customer_id):
+    '''Withdraw money from an account'''
+    account_id = input('Enter the account ID: ')
+    amount = float(input('Enter the amount to withdraw: '))
+
+    account_details = BankAccount.get_by_id(account_id)
+    account = BankAccount(account_details.id, account_details.customer_id, account_details.type,
+                          account_details.balance, account_details.can_overdraft)
+
+    if not account:
+        print('Account not found')
+        log_error(
+            f'Account not found: {account_id} for customer ID {customer_id}')
+        return customer_accounts(customer_id)
+
+    try:
+        account.make_withdrawal(amount)
+        print(f'New balance: {account.balance}')
+    except ValueError as error:
+        print(f'Error withdrawing from account {account_id}: {error}')
+        log_error(f'Error withdrawing from account {account_id}: {error}')
+
+    customer_accounts(customer_id)
+
+
+# Customer Products
+
+def view_products(customer_id):
+    '''View products for a customer'''
+    products = BankProduct.get_all_by_customer_id(customer_id)
+    if not products:
+        print('No products found')
+        log_error(f'No products found for customer ID {customer_id}')
+    else:
+        for product in products:
+            print(
+                f'Product ID: {product.id} - Type: {product.type} - Balance: {product.balance} - Minimum Payment: {product.min_payment}')
+    customer_products(customer_id)
+
+
+main_menu()

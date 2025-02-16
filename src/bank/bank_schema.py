@@ -1,7 +1,10 @@
 '''Defines all of the database models'''
 
 from sqlalchemy import ForeignKey, String, Integer, Float, Boolean
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import mapped_column
+from sqlalchemy.orm import relationship
 
 
 class ModelBase(DeclarativeBase):
