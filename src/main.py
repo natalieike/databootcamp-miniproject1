@@ -119,19 +119,20 @@ def customer_products(customer_id):
     choice = input('Enter a choice: ')
     if choice == '1':
         view_products(customer_id)
-    # elif choice == '2':
-    #     create_product(customer_id)
-    # elif choice == '3':
-    #     debit(customer_id)
-    # elif choice == '4':
-    #     credit(customer_id)
-    # elif choice == '5':
-    #     make_payment(customer_id)
-    # elif choice == '6':
-    #     customer_menu()
+    elif choice == '2':
+        create_product(customer_id)
+    elif choice == '3':
+        debit(customer_id)
+    elif choice == '4':
+        credit(customer_id)
+    elif choice == '5':
+        make_payment(customer_id)
+    elif choice == '6':
+        main_menu()
     else:
         print('Invalid choice')
         customer_products(customer_id)
+
 
 # Customer Accounts
 
@@ -154,6 +155,8 @@ def create_account(customer_id):
     account_type = input('Enter 1 for savings or 2 for checking account: ')
     if account_type != '1' and account_type != '2':
         print('Invalid account type')
+        log_error(
+            f'Invalid account type: {account_type} for customer ID {customer_id}')
         return customer_accounts(customer_id)
 
     normalized_account_type = 'savings' if account_type == '1' else 'checking'
@@ -216,6 +219,7 @@ def withdraw(customer_id):
 
 # Customer Products
 
+
 def view_products(customer_id):
     '''View products for a customer'''
     products = BankProduct.get_all_by_customer_id(customer_id)
@@ -227,6 +231,132 @@ def view_products(customer_id):
             print(
                 f'Product ID: {product.id} - Type: {product.type} - Balance: {product.balance} - Minimum Payment: {product.min_payment}')
     customer_products(customer_id)
+
+
+def create_product(customer_id):
+    '''Create a product for a customer'''
+    product_type = input(
+        'Enter 1 for credit card or 2 for loan: ')
+    if product_type != '1' and product_type != '2':
+        print('Invalid product type')
+        log_error(
+            f'Invalid product type: {product_type} for customer ID {customer_id}')
+        return customer_products(customer_id)
+    normalized_product_type = 'credit card' if product_type == '1' else 'loan'
+
+    product_balance = 0 if product_type == '1' else float(
+        input('Enter the loan amount: '))
+    if product_balance < 0:
+        print('Invalid loan amount')
+        log_error(
+            f'Invalid loan amount: {product_balance} for customer ID {customer_id}')
+        return customer_products(customer_id)
+
+    product_min_payment = 25 if product_type == '1' else float(
+        input('Enter the minimum payment: '))
+    if product_min_payment < 0:
+        print('Invalid minimum payment')
+        log_error(
+            f'Invalid minimum payment: {product_min_payment} for customer ID {customer_id}')
+        return customer_products(customer_id)
+
+    product = BankProduct(None, customer_id, normalized_product_type,
+                          product_balance, product_min_payment)
+    new_product = product.add_new()
+    print(
+        f'Account {new_product.id} created with a balance of {new_product.balance}')
+    customer_products(customer_id)
+
+
+def debit(customer_id):
+    '''Debit money from a product'''
+    product_id = input('Enter the product ID: ')
+    amount = float(input('Enter the amount to debit: '))
+
+    if amount < 0:
+        print('Invalid amount')
+        log_error(
+            f'Invalid amount: {amount} for customer ID {customer_id}')
+        return customer_products(customer_id)
+
+    product_details = BankProduct.get_by_id(product_id)
+    product = BankProduct(product_details.id, product_details.customer_id, product_details.type,
+                          product_details.balance, product_details.min_payment)
+
+    if not product:
+        print('Product not found')
+        log_error(
+            f'Product not found: {product_id} for customer ID {customer_id}')
+        return customer_products(customer_id)
+
+    try:
+        product.make_debit(amount)
+        print(f'New balance: {product.balance}')
+    except ValueError as error:
+        print(f'Error debiting from product {product_id}: {error}')
+        log_error(f'Error debiting from product {product_id}: {error}')
+
+    customer_products(customer_id)
+
+
+def credit(customer_id):
+    '''Credit money to a product'''
+    product_id = input('Enter the product ID: ')
+    amount = float(input('Enter the amount to credit: '))
+
+    if amount < 0:
+        print('Invalid amount')
+        log_error(
+            f'Invalid amount: {amount} for customer ID {customer_id}')
+        return customer_products(customer_id)
+
+    product_details = BankProduct.get_by_id(product_id)
+    product = BankProduct(product_details.id, product_details.customer_id, product_details.type,
+                          product_details.balance, product_details.min_payment)
+
+    if not product:
+        print('Product not found')
+        log_error(
+            f'Product not found: {product_id} for customer ID {customer_id}')
+        return customer_products(customer_id)
+
+    product.make_credit(amount)
+    print(f'New balance: {product.balance}')
+    customer_products(customer_id)
+
+
+def make_payment(customer_id):
+    '''Credit at least the minimum payment to a product'''
+    product_id = input('Enter the product ID: ')
+    amount = float(input('Enter the payment amount: '))
+
+    product_details = BankProduct.get_by_id(product_id)
+    product = BankProduct(product_details.id, product_details.customer_id, product_details.type,
+                          product_details.balance, product_details.min_payment)
+
+    if not product:
+        print('Product not found')
+        log_error(
+            f'Product not found: {product_id} for customer ID {customer_id}')
+        return customer_products(customer_id)
+
+    if amount < product.min_payment:
+        print('Payment amount is less than the minimum payment')
+        log_error(
+            f'Payment amount is less than the minimum payment for product ID {product_id} and customer ID {customer_id}')
+        return customer_products(customer_id)
+
+    if amount > product.balance:
+        print('Payment amount is greater than the balance - you are overpaying')
+        log_error(
+            f'Payment amount is greater than the balance for product ID {product_id} and customer ID {customer_id}')
+        return customer_products(customer_id)
+    product.make_credit(amount)
+    print(f'New balance: {product.balance}')
+    customer_products(customer_id)
+
+
+# Entry point for app
 
 
 main_menu()
