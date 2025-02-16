@@ -67,6 +67,14 @@ class BankAccount:
             statement = select(Account).filter_by(id=account_id)
             return db.scalars(statement).first()
 
+    @staticmethod
+    def get_by_id_and_customer_id(account_id, customer_id):
+        '''Returns an account by ID and customer ID'''
+        with get_db() as db:
+            statement = select(Account).filter_by(
+                id=account_id, customer_id=customer_id)
+            return db.scalars(statement).first()
+
     def get_balance(self):
         '''Returns the balance of the account'''
         return self.balance

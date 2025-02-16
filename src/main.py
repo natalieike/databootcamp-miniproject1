@@ -177,7 +177,8 @@ def deposit(customer_id):
     account_id = input('Enter the account ID: ')
     amount = float(input('Enter the amount to deposit: '))
 
-    account_details = BankAccount.get_by_id(account_id)
+    account_details = BankAccount.get_by_id_and_customer_id(
+        account_id, customer_id)
     account = BankAccount(account_details.id, account_details.customer_id, account_details.type,
                           account_details.balance, account_details.can_overdraft)
 
@@ -197,7 +198,8 @@ def withdraw(customer_id):
     account_id = input('Enter the account ID: ')
     amount = float(input('Enter the amount to withdraw: '))
 
-    account_details = BankAccount.get_by_id(account_id)
+    account_details = BankAccount.get_by_id_and_customer_id(
+        account_id, customer_id)
     account = BankAccount(account_details.id, account_details.customer_id, account_details.type,
                           account_details.balance, account_details.can_overdraft)
 
@@ -279,7 +281,8 @@ def debit(customer_id):
             f'Invalid amount: {amount} for customer ID {customer_id}')
         return customer_products(customer_id)
 
-    product_details = BankProduct.get_by_id(product_id)
+    product_details = BankProduct.get_by_id_and_customer_id(
+        product_id, customer_id)
     product = BankProduct(product_details.id, product_details.customer_id, product_details.type,
                           product_details.balance, product_details.min_payment)
 
@@ -310,7 +313,8 @@ def credit(customer_id):
             f'Invalid amount: {amount} for customer ID {customer_id}')
         return customer_products(customer_id)
 
-    product_details = BankProduct.get_by_id(product_id)
+    product_details = BankProduct.get_by_id_and_customer_id(
+        product_id, customer_id)
     product = BankProduct(product_details.id, product_details.customer_id, product_details.type,
                           product_details.balance, product_details.min_payment)
 
@@ -330,7 +334,8 @@ def make_payment(customer_id):
     product_id = input('Enter the product ID: ')
     amount = float(input('Enter the payment amount: '))
 
-    product_details = BankProduct.get_by_id(product_id)
+    product_details = BankProduct.get_by_id_and_customer_id(
+        product_id, customer_id)
     product = BankProduct(product_details.id, product_details.customer_id, product_details.type,
                           product_details.balance, product_details.min_payment)
 
