@@ -48,14 +48,18 @@ class BankAccount:
     @staticmethod
     def get_all():
         '''Returns all accounts from the database'''
+        print('get_all')
         with get_db() as db:
+            db.expire_all()
             statement = select(Account)
             return db.scalars(statement).all()
 
     @staticmethod
     def get_all_by_customer_id(customer_id):
         '''Returns all accounts for a customer'''
+        print('get_all_by_customer_id')
         with get_db() as db:
+            db.expire_all()
             statement = select(Account).filter_by(
                 customer_id=customer_id)
             return db.scalars(statement).all()

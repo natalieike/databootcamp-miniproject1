@@ -10,7 +10,8 @@ class BankCustomer:
     '''Class for bank customer operations'''
 
     def __init__(self, customer_id, first_name, last_name, email, street_address, city, state, zip_code):
-        self.id = customer_id
+        if customer_id is not None:
+            self.id = customer_id
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
@@ -19,17 +20,20 @@ class BankCustomer:
         self.state = state
         self.zip_code = zip_code
 
-    def save(self):
+    def add_new(self):
         '''Saves the customer to the database'''
+        new_customer = Customer(first_name=self.first_name, last_name=self.last_name, email=self.email,
+                                street_address=self.street_address, city=self.city, state=self.state, zip_code=self.zip_code)
         with get_db() as db:
             try:
-                db.add(self)
+                db.add(new_customer)
             except Exception:
                 log_error('Error saving customer')
                 db.rollback()
             else:
                 db.commit()
-                db.refresh(self)
+                db.refresh(new_customer)
+        return new_customer
 
     @staticmethod
     def get_all():

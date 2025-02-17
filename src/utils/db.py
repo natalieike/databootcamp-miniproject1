@@ -11,9 +11,9 @@ load_dotenv()
 
 DB_CONNECTION_STRING = str(os.getenv("DB_CONNECTION_STRING"))
 
-engine = create_engine(DB_CONNECTION_STRING, echo=True)
+engine = create_engine(DB_CONNECTION_STRING, echo=False)
 ModelBase.metadata.create_all(engine)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(autocommit=False, autoflush=True, bind=engine)
 
 
 @contextlib.contextmanager

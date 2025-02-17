@@ -10,24 +10,29 @@ class BankEmployee:
     '''Class for bank employee operations'''
 
     def __init__(self, employee_id, first_name, last_name, email, is_manager, department):
-        self.id = employee_id
+        if employee_id is not None:
+            self.id = employee_id
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
         self.is_manager = is_manager
         self.department = department
 
-    def save(self):
+    def add_new(self):
         '''Saves the employee to the database'''
+        new_employee = Employee(first_name=self.first_name, last_name=self.last_name,
+                                email=self.email, is_manager=self.is_manager, department=self.department)
+
         with get_db() as db:
             try:
-                db.add(self)
+                db.add(new_employee)
             except Exception:
                 log_error('Error saving employee')
                 db.rollback()
             else:
                 db.commit()
-                db.refresh(self)
+                db.refresh(new_employee)
+        return new_employee
 
     @staticmethod
     def get_all():

@@ -7,6 +7,9 @@ from bank.bank_employee import BankEmployee
 from utils.errors import log_error
 
 
+# Menus
+
+
 def main_menu():
     '''Main menu for the bank app'''
     print('1. Customer Menu')
@@ -70,19 +73,19 @@ def employee_menu():
     print('4. Products')
     print('5. Exit')
     choice = input('Enter a choice: ')
-    # if choice == '1':
-    #     create_customer()
-    # elif choice == '2':
-    #     create_employee()
-    # elif choice == '3':
-    #     employee_accounts()
-    # elif choice == '4':
-    #     employee_products()
-    # elif choice == '5':
-    #     main_menu()
-    # else:
-    #     print('Invalid choice')
-    #     employee_menu()
+    if choice == '1':
+        create_customer()
+    elif choice == '2':
+        create_employee()
+    elif choice == '3':
+        employee_accounts()
+    elif choice == '4':
+        employee_products()
+    elif choice == '5':
+        print('Goodbye!')
+    else:
+        print('Invalid choice')
+        employee_menu()
 
 
 def customer_accounts(customer_id):
@@ -102,10 +105,30 @@ def customer_accounts(customer_id):
     elif choice == '4':
         withdraw(customer_id)
     elif choice == '5':
-        main_menu()
+        print('Goodbye!')
     else:
         print('Invalid choice')
         customer_accounts(customer_id)
+
+
+def employee_accounts():
+    '''Menu for employee accounts'''
+    print('1. View Accounts')
+    print('2. Update Balance')
+    print('3. Update Overdraft')
+    print('4. Exit')
+    choice = input('Enter a choice: ')
+    if choice == '1':
+        employee_view_accounts()
+    elif choice == '2':
+        employee_update_account_balance()
+    elif choice == '3':
+        employee_update_overdraft()
+    elif choice == '4':
+        print('Goodbye!')
+    else:
+        print('Invalid choice')
+        employee_accounts()
 
 
 def customer_products(customer_id):
@@ -128,10 +151,30 @@ def customer_products(customer_id):
     elif choice == '5':
         make_payment(customer_id)
     elif choice == '6':
-        main_menu()
+        print('Goodbye!')
     else:
         print('Invalid choice')
         customer_products(customer_id)
+
+
+def employee_products():
+    '''Menu for employee products'''
+    print('1. View Products')
+    print('2. Update Balance')
+    print('3. Update Minimum Payment')
+    print('4. Exit')
+    choice = input('Enter a choice: ')
+    if choice == '1':
+        employee_view_products()
+    elif choice == '2':
+        employee_update_product_balance()
+    elif choice == '3':
+        employee_update_min_payment()
+    elif choice == '4':
+        print('Goodbye!')
+    else:
+        print('Invalid choice')
+        employee_products()
 
 
 # Customer Accounts
@@ -179,14 +222,15 @@ def deposit(customer_id):
 
     account_details = BankAccount.get_by_id_and_customer_id(
         account_id, customer_id)
-    account = BankAccount(account_details.id, account_details.customer_id, account_details.type,
-                          account_details.balance, account_details.can_overdraft)
 
-    if not account:
+    if not account_details:
         print('Account not found')
         log_error(
             f'Account not found: {account_id} for customer ID {customer_id}')
         return customer_accounts(customer_id)
+
+    account = BankAccount(account_details.id, account_details.customer_id, account_details.type,
+                          account_details.balance, account_details.can_overdraft)
 
     account.make_deposit(amount)
     print(f'New balance: {account.balance}')
@@ -200,14 +244,15 @@ def withdraw(customer_id):
 
     account_details = BankAccount.get_by_id_and_customer_id(
         account_id, customer_id)
-    account = BankAccount(account_details.id, account_details.customer_id, account_details.type,
-                          account_details.balance, account_details.can_overdraft)
 
-    if not account:
+    if not account_details:
         print('Account not found')
         log_error(
             f'Account not found: {account_id} for customer ID {customer_id}')
         return customer_accounts(customer_id)
+
+    account = BankAccount(account_details.id, account_details.customer_id, account_details.type,
+                          account_details.balance, account_details.can_overdraft)
 
     try:
         account.make_withdrawal(amount)
@@ -283,14 +328,15 @@ def debit(customer_id):
 
     product_details = BankProduct.get_by_id_and_customer_id(
         product_id, customer_id)
-    product = BankProduct(product_details.id, product_details.customer_id, product_details.type,
-                          product_details.balance, product_details.min_payment)
 
-    if not product:
+    if not product_details:
         print('Product not found')
         log_error(
             f'Product not found: {product_id} for customer ID {customer_id}')
         return customer_products(customer_id)
+
+    product = BankProduct(product_details.id, product_details.customer_id, product_details.type,
+                          product_details.balance, product_details.min_payment)
 
     try:
         product.make_debit(amount)
@@ -315,14 +361,15 @@ def credit(customer_id):
 
     product_details = BankProduct.get_by_id_and_customer_id(
         product_id, customer_id)
-    product = BankProduct(product_details.id, product_details.customer_id, product_details.type,
-                          product_details.balance, product_details.min_payment)
 
-    if not product:
+    if not product_details:
         print('Product not found')
         log_error(
             f'Product not found: {product_id} for customer ID {customer_id}')
         return customer_products(customer_id)
+
+    product = BankProduct(product_details.id, product_details.customer_id, product_details.type,
+                          product_details.balance, product_details.min_payment)
 
     product.make_credit(amount)
     print(f'New balance: {product.balance}')
@@ -336,14 +383,15 @@ def make_payment(customer_id):
 
     product_details = BankProduct.get_by_id_and_customer_id(
         product_id, customer_id)
-    product = BankProduct(product_details.id, product_details.customer_id, product_details.type,
-                          product_details.balance, product_details.min_payment)
 
-    if not product:
+    if not product_details:
         print('Product not found')
         log_error(
             f'Product not found: {product_id} for customer ID {customer_id}')
         return customer_products(customer_id)
+
+    product = BankProduct(product_details.id, product_details.customer_id, product_details.type,
+                          product_details.balance, product_details.min_payment)
 
     if amount < product.min_payment:
         print('Payment amount is less than the minimum payment')
@@ -361,7 +409,162 @@ def make_payment(customer_id):
     customer_products(customer_id)
 
 
-# Entry point for app
+# Employee functions
 
+def create_customer():
+    '''Create a new customer'''
+    first_name = input('Enter the customer first name: ')
+    last_name = input('Enter the customer last name: ')
+    email = input('Enter the customer email: ')
+    street_address = input('Enter the customer street address: ')
+    city = input('Enter the customer city: ')
+    state = input('Enter the customer state: ')
+    zip_code = input('Enter the customer zip code: ')
+
+    customer = BankCustomer(None, first_name, last_name, email,
+                            street_address, city, state, zip_code)
+    new_customer = customer.add_new()
+    print(f'Customer {new_customer.id} created')
+    employee_menu()
+
+
+def create_employee():
+    '''Create a new employee'''
+    first_name = input('Enter the employee first name: ')
+    last_name = input('Enter the employee last name: ')
+    email = input('Enter the employee email: ')
+    is_manager = input('Is the employee a manager? (y/n): ').lower() == 'y'
+    department = input('Enter the employee department: ')
+
+    employee = BankEmployee(None, first_name, last_name,
+                            email, is_manager, department)
+    new_employee = employee.add_new()
+    print(f'Employee {new_employee.id} created')
+    employee_menu()
+
+
+def employee_view_accounts():
+    '''View all accounts'''
+    customer_id = input('Enter the customer ID or 0 for all customers: ')
+
+    accounts = BankAccount.get_all(
+    ) if customer_id == '0' else BankAccount.get_all_by_customer_id(customer_id)
+
+    if not accounts:
+        print('No accounts found')
+        log_error('No accounts found in employee view')
+    else:
+        for account in accounts:
+            print(
+                f'Account ID: {account.id} - Customer ID: {account.customer_id} - Type: {account.type} - Balance: {account.balance} - Can Overdraft: {account.can_overdraft}')
+    employee_accounts()
+
+
+def employee_update_account_balance():
+    '''Update the balance of an account'''
+    account_id = input('Enter the account ID: ')
+    amount = float(input('Enter the new balance: '))
+
+    account_details = BankAccount.get_by_id(
+        account_id)
+
+    if not account_details:
+        print('Account not found')
+        log_error(
+            f'Account not found: {account_id} accessed in employee view')
+        return employee_accounts()
+
+    account = BankAccount(account_details.id, account_details.customer_id, account_details.type,
+                          account_details.balance, account_details.can_overdraft)
+
+    account.set_balance(amount)
+    print(f'New balance: {account.balance}')
+    employee_accounts()
+
+
+def employee_update_overdraft():
+    '''Update can overdraft of an account'''
+    account_id = input('Enter the account ID: ')
+    can_overdraft = input('Can overdraft y/n: ') == 'y'
+
+    account_details = BankAccount.get_by_id(
+        account_id)
+
+    if not account_details:
+        print('Account not found')
+        log_error(
+            f'Account not found: {account_id} accessed in employee view')
+        return employee_accounts()
+
+    account = BankAccount(account_details.id, account_details.customer_id, account_details.type,
+                          account_details.balance, account_details.can_overdraft)
+
+    account.set_can_overdraft(can_overdraft)
+    print(f'Overdraft updated: {account.can_overdraft}')
+    employee_accounts()
+
+
+def employee_view_products():
+    '''View all products'''
+    customer_id = input('Enter the customer ID or 0 for all customers: ')
+
+    products = BankProduct.get_all(
+    ) if customer_id == '0' else BankProduct.get_all_by_customer_id(customer_id)
+
+    if not products:
+        print('No products found')
+        log_error('No products found in employee view')
+    else:
+        for product in products:
+            print(
+                f'Product ID: {product.id} - Customer ID: {product.customer_id} - Type: {product.type} - Balance: {product.balance} - Min Payment: {product.min_payment}')
+    employee_products()
+
+
+def employee_update_product_balance():
+    '''Update the balance of a product'''
+    product_id = input('Enter the product ID: ')
+    amount = float(input('Enter the new balance: '))
+
+    product_details = BankProduct.get_by_id(
+        product_id)
+
+    if not product_details:
+        print('Product not found')
+        log_error(
+            f'Product not found: {product_id} accessed in employee view')
+        return employee_products()
+
+    product = BankProduct(product_details.id, product_details.customer_id,
+                          product_details.type, product_details.balance, product_details.min_payment)
+
+    product.set_balance(amount)
+    print(f'New balance: {product.balance}')
+    employee_products()
+
+
+def employee_update_min_payment():
+    '''Update the min payment of a product'''
+    product_id = input('Enter the product ID: ')
+    amount = float(input('Enter the new minimum payment: '))
+
+    product_details = BankProduct.get_by_id(
+        product_id)
+
+    if not product_details:
+        print('Product not found')
+        log_error(
+            f'Product not found: {product_id} accessed in employee view')
+        return employee_products()
+
+    product = BankProduct(product_details.id, product_details.customer_id, product_details.type,
+                          product_details.balance, product_details.min_payment)
+
+    product.set_min_payment(amount)
+    print(f'New minimum payment: {product.min_payment}')
+    employee_products()
+
+
+# Entry point for app
 
 main_menu()
