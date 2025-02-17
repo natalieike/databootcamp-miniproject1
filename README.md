@@ -20,6 +20,7 @@ DB_CONNECTION_STRING=mysql://{your_username}:{your_password}@localhost/bankdemo
 ## Run
 
 ```
+cd src
 python3 main.py
 ```
 
@@ -30,3 +31,7 @@ INSERT INTO employee (first_name, last_name, email, is_manager, department) VALU
 ```
 
 Once this is done, you can add additional employees and customers within the app.
+
+## Design
+
+[UML Diagram](https://www.canva.com/design/DAGe1lWNCKI/p7bYIovSt3zwjK7pVhlgTw/edit?utm_content=DAGe1lWNCKI&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
