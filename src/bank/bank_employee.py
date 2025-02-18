@@ -1,9 +1,9 @@
 '''Module for bank employee operations'''
 
 from sqlalchemy import select
-from bank.bank_schema import Employee
-from utils.db import get_db
-from utils.errors import log_error
+from src.bank.bank_schema import Employee
+from src.utils.db import get_db
+from src.utils.errors import log_error
 
 
 class BankEmployee:

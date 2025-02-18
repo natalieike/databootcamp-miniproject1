@@ -1,9 +1,9 @@
 '''Module for bank customer operations'''
 
 from sqlalchemy import select
-from bank.bank_schema import Customer
-from utils.db import get_db
-from utils.errors import log_error
+from src.bank.bank_schema import Customer
+from src.utils.db import get_db
+from src.utils.errors import log_error
 
 
 class BankCustomer:

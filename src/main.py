@@ -1,10 +1,10 @@
 '''Main script to run app'''
 
-from bank.bank_account import BankAccount
-from bank.bank_product import BankProduct
-from bank.bank_customer import BankCustomer
-from bank.bank_employee import BankEmployee
-from utils.errors import log_error
+from src.bank.bank_account import BankAccount
+from src.bank.bank_product import BankProduct
+from src.bank.bank_customer import BankCustomer
+from src.bank.bank_employee import BankEmployee
+from src.utils.errors import log_error
 
 
 # Menus
